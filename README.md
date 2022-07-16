@@ -4,10 +4,6 @@
 
 ## 包含插件
 
-<style>
-</style>
-
-|     |     |
 | --- | --- |
 | 软件名 | 中文说明 |
 | luci-app-accesscontrol | 访问时间控制 |
@@ -35,6 +31,4 @@
 
 ## 包含主题
 
-luci-theme-argonne
-luci-theme-bootstrap
-luci-theme-ifit
+luci-theme-argonne、luci-theme-bootstrap、luci-theme-ifit
