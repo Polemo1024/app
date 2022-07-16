@@ -4,8 +4,7 @@
 
 ## 包含插件
 | --- | --- |
-| 软件名 | 中文说明|
-| 软件名 | 中文说明 |
+| --- | --- |
 | luci-app-accesscontrol | 访问时间控制 |
 | luci-app-binary-file(new) | 二进制文件；可执行文件 |
 | luci-app-arpbind | IP/MAC绑定 |
