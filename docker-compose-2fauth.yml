@@ -1,0 +1,190 @@
+version: "3"
+services:
+  2fauth:
+    image: 2fauth/2fauth
+    container_name: 2fauth
+    volumes:
+      - ./2fauth:/2fauth
+    ports:
+      - 8000:8000/tcp
+    environment:
+      # 您可以更改应用程序的名称
+      - APP_NAME=2FAuth
+
+      # 你可以把这个留在 "local" 。如果您将其更改为生产，大多数控制台命令将要求额外的确认。
+      # 不要设置为 "testing" 。
+      - APP_ENV=local
+
+      # 您的应用程序的时区，用于记录日期和时间到数据库。这个全局设置可以是
+      # 由用户通过应用内设置覆盖的个性化日期和时间显示。
+      # 如果在应用程序已经运行时更改此设置，则数据库中的现有记录将不会更新
+      - APP_TIMEZONE=UTC
+
+      # 设置为true，如果你想在错误屏幕上看到调试信息。
+      - APP_DEBUG=false
+
+      # 这应该是你的电子邮件地址
+      - SITE_OWNER=mail@example.com
+
+      # 数据库和会话的加密密钥。请妥善保管。
+      # 如果您生成一个新的数据库，所有现有的数据必须被视为丢失。
+      # 将其更改为恰好32个字符的字符串，或者使用命令 "php artisan key:generate" 来生成它
+      - APP_KEY=SomeRandomStringOf32CharsExactly
+
+      # 该变量必须与安装的外部地址匹配。
+      # 否则 "Webauthn" 将不起作用.
+      - APP_URL=http://localhost
+
+      # 如果你想从CDN (如https://cdn.example.com )提供js资源,
+      # 取消下面一行的注释，用CDN url设置这个变量.
+      # 否则，注释这一行.
+      # - ASSET_URL=http://localhost
+
+      #
+      # 如果你想让你的应用像 "demo" 一样运行，把这个设为true.
+      # Demo 模式每小时重置一次 app 内容，并设置一个普通的 Demo 用户.
+      - IS_DEMO_APP=false
+
+      # 日志通道定义了日志条目的去向。
+      # "daily"是默认的日志模式，每天在/storage/logs/中轮换7个日志文件。
+      # 同样可用的还有 "errorlog, syslog, stderr, papertrail, slack和stack" 通道
+      # 将多个通道合并为一个通道。
+      - LOG_CHANNEL=daily
+
+      # 日志级别。您可以将其设置为从最不严重到最严重：
+      # debug, info, notice, warning, error, critical, alert, emergency
+      # 如果你将它设置为调试，那么你的日志将会快速增长。如果你把它设为紧急状态
+      # 任何东西都不会被记录。
+      - LOG_LEVEL=notice
+
+      # 数据库配置 (只能是sqlite )
+      - DB_DATABASE="/srv/database/database.sqlite"
+
+      # 如果你正在寻找性能改进，你可以安装memcached.
+      - CACHE_DRIVER=file
+      - SESSION_DRIVER=file
+
+      # 邮件设置
+      # 参考您的电子邮件提供商文档来配置您的邮件设置
+      # 为每个可用的设置设置一个值，以避免问题
+      - MAIL_MAILER=log
+      - MAIL_HOST=smtp.mailtrap.io
+      - MAIL_PORT=2525
+      - MAIL_USERNAME=null
+      - MAIL_PASSWORD=null
+      - MAIL_ENCRYPTION=null
+      - MAIL_FROM_NAME=null
+      - MAIL_FROM_ADDRESS=null
+
+      # SSL对等体验证。
+      # 将此设置为false以禁用SSL证书验证。
+      # 警告
+      # 禁用对等验证会导致重大安全漏洞。
+      # 只有当你知道你在做什么时才改变它。
+      - MAIL_VERIFY_SSL_PEER=true
+
+      # API设置
+      # 同一IP在一分钟内调用API的最大次数。
+      # 一旦到达，来自该IP的所有请求将被拒绝，直到一分钟过去。
+      # 设置为null禁用API节流。
+      - THROTTLE_API=60
+
+      # 认证设置
+      # 用户每分钟登录失败的次数。
+      # 一旦达到，所有登录尝试将被拒绝，直到一分钟过去。
+      # 此设置适用于电子邮件/密码和webauthn登录尝试。
+      - LOGIN_THROTTLE=5
+
+      # 默认的认证保护
+      # 支持:
+      # 'web-guard': Laravel内置的认证系统 (默认为null )
+      # 'reverse-proxy-guard'：当 2FAuth 部署在处理身份验证的反向代理后面时
+      # 警告
+      # 当使用 "reverse proxy-guard" 时，只需查找专用标头，跳过所有其他内置标头
+      # 认证检查。这意味着您的代理全权负责身份验证过程，2fath 将负责
+      # 信任他，当头是 "presents" 时.
+      - AUTHENTICATION_GUARD=web-guard
+
+      # 认证日志保留时间，单位为天。
+      # 旧的日志条目将自动删除。
+      - AUTHENTICATION_LOG_RETENTION=365
+
+      # 反向代理发送的标识代理级别认证用户的HTTP头的名称。
+      # 检查你的代理文档，找出这些头文件是如何命名的 (即 "REMOTE_USER"， "REMOTE_EMAIL"，等等…)
+      #  (仅当AUTHENTICATION_GUARD设置为 "reverse-proxy-guard" 时相关 )
+      - AUTH_PROXY_HEADER_FOR_USER=null
+      - AUTH_PROXY_HEADER_FOR_EMAIL=null
+
+      # 使用身份验证代理时打开的自定义注销URL。
+      - PROXY_LOGOUT_URL=null
+
+      # WebAuthn设置
+      # 依赖方名称，即应用程序的名称。如果为空，默认为 "APP_NAME"。不要设置为空。
+      - WEBAUTHN_NAME=2FAuth
+
+      # 依赖方ID，应该等于站点域 (即 2fauth.example.com )。
+      # 如果为空，设备将在内部填充它 (推荐)
+      # 参见 https://webauthn-doc.spomky-labs.com/prerequisites/the-relying-party#how-to-determine-the-relying-party-id
+      - WEBAUTHN_ID=null
+
+      # 使用此设置来控制用户验证过程中的行为
+      # WebAuthn认证流程。
+      #
+      # 大多数身份验证器和智能手机会要求用户主动验证
+      # hemselves用于登录。例如，通过触摸加 PIN 码，
+      # 密码输入，或生物识别 (例如，出示指纹).
+      # 目的是将一个用户与其他用户区分开来.
+      #
+      # 支持:
+      # 'required'：将始终要求用户验证
+      # 'preferred' (默认 )：如果可能，将要求用户验证
+      # "劝阻"：不要求用户验证 (例如，尽量减少对用户交互流程的干扰 )
+      - WEBAUTHN_USER_VERIFICATION=preferred
+
+      #### 单点登录设置 (Socialite ) ####
+      # 取消注释并完成您想要启用的OAuth提供程序的行.
+      # - OPENID_AUTHORIZE_URL=
+      # - OPENID_TOKEN_URL=
+      # - OPENID_USERINFO_URL=
+      # - OPENID_CLIENT_ID=
+      # - OPENID_CLIENT_SECRET=
+      # - OPENID_HTTP_VERIFY_SSL_PEER=true
+
+      # 也可以是磁盘上自定义证书的路径，例如
+      # - OPENID_HTTP_VERIFY_SSL_PEER=/path/to/cert.pem
+      #
+      # - GITHUB_CLIENT_ID=
+      # - GITHUB_CLIENT_SECRET=
+
+      # 使用此设置声明受信任代理.
+      # 支持:
+      #   '*': 信任任何代理
+      #   以逗号分隔的IP列表：信任的代理IP列表
+      - TRUSTED_PROXIES=null
+
+      # 代理外发请求，如新版本检测或标识提取。
+      # 您可以提供包含方案、用户名和密码的代理URL。
+      # 例如："http://username:password@192.168.16.1:10"。
+      - PROXY_FOR_OUTGOING_REQUESTS=null
+
+      # 设置为true以启用内容安全策略 (CSP )。
+      # CSP有助于防止或最小化某些类型的安全威胁的风险。
+      # 这主要用于防御跨站点脚本 (XSS )攻击，其中
+      # 攻击者能够将恶意代码注入web应用程序
+      - CONTENT_SECURITY_POLICY=false
+
+      # 保持以下配置变量不变。.
+      # 除非你喜欢修修补补，知道自己在做什么.
+      - BROADCAST_DRIVER=log
+      - QUEUE_DRIVER=sync
+      - SESSION_LIFETIME=120
+      - REDIS_HOST=127.0.0.1
+      - REDIS_PASSWORD=null
+      - REDIS_PORT=6379
+      - PUSHER_APP_ID=
+      - PUSHER_APP_KEY=
+      - PUSHER_APP_SECRET=
+      - PUSHER_APP_CLUSTER=mt1
+      - VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+      - VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+      - MIX_ENV=local

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  lucky:
+    image: gdy666/lucky:latest
+    container_name: lucky
+    ports:
+      - "16601:16601"
+    volumes:
+      - /vol1/1000/docker/lucky/config:/goodluck
+      - /vol1/1000/docker/lucky/cert:/opt/cert
+    restart: always
+    network_mode: host
